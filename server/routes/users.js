@@ -25,11 +25,11 @@ router.post('/', function(req, res, next) {
 
   User.create({
     username : req.body.username,
-    password : req.password
+    password : req.body.password
   })
   .then ( response => {
     res.status(200).json({
-      username:response.username,
+      username: response.username,
       password : response.password
     })
   })
