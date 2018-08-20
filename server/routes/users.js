@@ -5,22 +5,44 @@ const jwt = require('jsonwebtoken')
 
 /* GET users listing. */
 router.post('/', function(req, res, next) {
+  
+  User
+  .findOne({
+    username : req.body.username
+  })
+  .then( response => {
+      if(response){
+        res.status(201).json({message:`account ${response.username} registered`})
+      }else{
+        next()
+      }
+  })
+  .catch( err => {
+    json({message:"your information is not valid"})
+  })
+
+}, function (req,res){
+
   User.create({
     username : req.body.username,
     password : req.password
   })
   .then ( response => {
-    res.status(200).json({data:response})
+    res.status(200).json({
+      username:response.username,
+      password : response.password
+    })
   })
   .catch ( err => {
-    res.status(400).json({msg:"your information is not valid"})
-  })
-});
+    res.status(400).json({message:"your information is not valid"})
+  })  
+
+} );
 
 router.post('/auth', function(req, res, next) {
   User
   .findOne({
-    email : email
+    username : req.body.username
   })
   .then ( response => {
     //give token here
