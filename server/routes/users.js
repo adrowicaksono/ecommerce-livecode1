@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const User = require('../models/user')
 const jwt = require('jsonwebtoken')
+require('dotenv').config()
 
 /* GET users listing. */
 router.post('/', function(req, res, next) {
@@ -40,6 +41,8 @@ router.post('/', function(req, res, next) {
 } );
 
 router.post('/auth', function(req, res, next) {
+  console.log(req.body.password)
+  console.log(req.body.username)
   User
   .findOne({
     username : req.body.username
@@ -47,8 +50,10 @@ router.post('/auth', function(req, res, next) {
   .then ( response => {
     //give token here
     if(response){
-      if(response.password === req.password){
+      
+      if(response.password === req.body.password){
         var token = jwt.sign({ id:response._id, username:response.username, email:response.email }, process.env.tokenSecretKey);
+        console.log(token)
         res.status(200).json({token:token})
       }else{
         res.status(401).msg({msg:"password is not valid"})  
@@ -56,9 +61,8 @@ router.post('/auth', function(req, res, next) {
     }else{
       res.status(401).msg({msg:"username is not valid"})
     }
-    res.status(200).json({data:response})
   })
-  .catch ( err => {
+  .catch ( err => {    
     res.status(400).json({msg:"your information is not valid"})
   })
 });

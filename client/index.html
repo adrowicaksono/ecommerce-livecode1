@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <title>Auth</title>
+</head>
+<body>
+    <div id="app">
+        <p v-if="isError" style="color:red">{{error}}</p>
+        <div v-if="!isLogin">
+            <input type="text" v-model="username" placeholder="username">
+            <input type="password" v-model="password" placeholder="password">
+            <input type="button" value="login" v-on:click="login">
+        </div>
+        <div v-else>
+            <button>logout</button>
+        </div>
+        <br>
+        {{items}}
+        <create><create/>
+        
+        <div style="display:flex; flex-flow:row wrap" v-for:"i in items">
+                <!-- <div class="card" style="width: 18rem;">
+                        <img class="card-img-top" src=".../100px180/" alt="Card image cap">
+                        <div class="card-body">
+                          <h5 class="card-title">Card title</h5>
+                          <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                          <a href="#" class="btn btn-primary">Go somewhere</a>
+                        </div>
+                </div> -->
+        </div>
+    </div>
+    <script src="component/create.js"></script>
+    <script>
+
+        let app = new Vue({
+            components: {
+                'create': Create,
+            },
+            el: '#app',
+            data :{
+                username :'',
+                password : '',
+                isError : false,
+                error : '',
+                isLogin : false,
+                items : '',
+            },
+            mounted () {
+                this.getItem()
+            },
+            methods:{
+                getItem (){
+                    let token = localStorage.getItem("token")
+                    axios.get('http://localhost:3000/', {
+                        headers: {
+                            Authorization : token
+                        }
+                    })
+                    .then (response => {
+                        this.items = response.data.data
+                        console.log(this.items)
+                    })
+                    .catch (err => {
+                        this.isError = true
+                        this.error = err.message
+                    })
+                },
+                login () {
+                    axios.post('http://localhost:3000/users/auth',{
+                        username : this.username,
+                        password : this.password,
+                    })
+                    .then ( response => {
+                        console.log('-----aaa')
+                        localStorage.setItem('token', response.data.token)
+                        this.isError = false
+                        this.isLogin = true
+                        console.log(response)
+                    })
+                    .catch (err => {
+                        console.log('-----bbb', err)
+                        
+                        this.isError = true
+                        this.error = err.message
+                        console.log(err)
+                    })
+                },       
+            }
+        })
+    </script>
+</body>
+</html>

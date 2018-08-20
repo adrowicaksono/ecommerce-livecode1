@@ -5,7 +5,7 @@ const Itemschema = new Schema({
   name  :  String,
   price   : String,
   stock   :   Number,
-  tags: [String],s
+  tags: [String],
 }, {
     timestamps : true
 });
